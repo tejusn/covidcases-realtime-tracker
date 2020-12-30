@@ -16,8 +16,11 @@ import java.util.List;
 
 public class HomeController {
 
-    @Autowired
-    CovidDataService covidDataService;
+    private final CovidDataService covidDataService;
+
+    public HomeController(CovidDataService covidDataService) {
+        this.covidDataService = covidDataService;
+    }
 
     @GetMapping("/")
     //Thymeleaf dependancy enables to return the html file name specified in the GetMapping method
