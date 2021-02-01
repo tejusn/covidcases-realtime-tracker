@@ -1,19 +1,23 @@
 package com.springboot.coronavirustracker.services;
 
 import com.springboot.coronavirustracker.models.LocationStats;
-import org.apache.catalina.mbeans.JmxRemoteLifecycleListener;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+//import java.net.URI;
+//import java.net.http.HttpClient;
+//import java.net.http.HttpRequest;
+//import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,12 +47,15 @@ public class CovidDataService {
     //This runs the first hour of every day
     public void fetchVirusData() throws IOException, InterruptedException {
         List<LocationStats> newStats = new ArrayList<>();
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(VIRUS_DATA_URL))
-                .build();
-        HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
-        StringReader stringReader = new StringReader(httpResponse.body());
+        RestTemplate restTemplate = new RestTemplate();
+        StringReader stringReader = new StringReader(restTemplate.getForEntity(VIRUS_DATA_URL, String.class)
+                                                         .getBody());
+//        HttpClient client = HttpClient.newHttpClient();
+//        HttpRequest request = HttpRequest.newBuilder()
+//                .uri(URI.create(VIRUS_DATA_URL))
+//                .build();
+//        HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+//        StringReader stringReader = new StringReader(httpResponse.body());
         Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(stringReader);
         for (CSVRecord record : records) {
             LocationStats locationStat = new LocationStats();

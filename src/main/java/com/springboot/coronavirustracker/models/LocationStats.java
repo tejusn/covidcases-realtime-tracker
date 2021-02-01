@@ -1,8 +1,7 @@
 package com.springboot.coronavirustracker.models;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Generated;
 
 @Data
 public class LocationStats {
